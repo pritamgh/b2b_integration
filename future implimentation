@@ -1,0 +1,6 @@
+use redis
+use celery & rabbitMQ
+use fabric
+use swagger
+use docker
+deploy in aws
