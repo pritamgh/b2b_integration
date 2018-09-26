@@ -1,20 +1,22 @@
 import React, { Component } from 'react';
-import { Provider } from 'react-redux';
 
-import PurchaseOrders from './components/purchase_orders/purchaseorders.js';
-//import PurchaseOrderCreate from './components/purchase_orders/purchaseorder-create.js';
-import store from './store.js';
+import Search from './components/purchase_orders/search.js';
+import PurchaseOrders from './components/purchase_orders/pod_list.js';
+import PurchaseOrderCreate from './components/purchase_orders/pod_create.js';
 
 
 class PurchaseOrdersApp extends Component {
 
   render() {
     return (
-      <Provider store={store}>
         <div className="PurchaseOrdersApp">
-          <PurchaseOrders />
+        	<div className="container" style={{'margin-top': '50px'}}>
+        		<PurchaseOrders />
+        	</div>
+        	<div className="container" style={{'margin-top': '30px'}}>
+            	<PurchaseOrderCreate />
+            </div>
         </div>
-      </Provider>
     );
   }
 

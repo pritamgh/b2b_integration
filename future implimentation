@@ -1,6 +1,19 @@
-use redis
-use celery & rabbitMQ
-use fabric
-use swagger
-use docker
-deploy in aws
+Till Now:
+	Request/Response Done [GET/POST]
+	List all the Purchase Orders
+	Purchase Orders Create Form
+
+
+Product Enhancement:
+	Search Functionality [React Form, Django Backend]
+	Caching
+	
+
+
+Technology :
+	use redis - Done
+	use celery & rabbitMQ - Done
+	use fabric
+	use swagger
+	use docker
+	deploy in aws

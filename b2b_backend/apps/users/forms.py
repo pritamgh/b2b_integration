@@ -1,11 +1,11 @@
-from django.contrib.auth.forms import UserCreationForm
-from .models import CustomUser
+from django import forms
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 
-class SignUpForm(UserCreationForm):
-
-    class Meta:
-        model = CustomUser
-        """fields = ('first_name', 'last_name', 'email', 'contact',
-                  'user_role', 'warehouse_exchange_id')"""
-        fields = ('email', 'user_role')
+class GenerateRandomUserForm(forms.Form):
+    total = forms.IntegerField(
+        validators=[
+            MinValueValidator(50),
+            MaxValueValidator(500)
+        ]
+    )
