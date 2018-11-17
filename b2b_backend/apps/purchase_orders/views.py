@@ -20,7 +20,8 @@ CACHE_TTL = getattr(settings, 'CACHE_TTL', DEFAULT_TIMEOUT)
 
 
 @api_view(["GET"])
-def viewPurchaseOrderList(request):
+def viewPurchaseOrderHeaderList(request):
+
     if 'pod_header' in cache:
         # get results from cache
         pod_header_list = cache.get('pod_header')
@@ -30,20 +31,27 @@ def viewPurchaseOrderList(request):
         pod_header_list = PurchaseOrderHeader.objects.all()
         results = PurchaseOrderHeaderSerializer(pod_header_list, many=True)
         # store data in cache
-        pod_header = 1
+        pod_header = None
         cache.set(pod_header, results.data, timeout=CACHE_TTL)
-        return Response(results.data, status=status.HTTP_201_CREATED)
+        return Response(results.data)
 
 
 @api_view(["GET"])
-def viewPurchaseOrderHeaderLine(request, pk):
-    try:
-        pod_header_line_list = PurchaseOrderLine.objects.filter(
-            purchase_order_header_id=pk)
-    except pod_header_line_list.DoesNotExist:
-        return Response(status=404)
+def viewPurchaseOrderLineList(request, pk):
 
-    if request.method == "GET":
-        results = PurchaseOrderLineSerializer(
-            pod_header_line_list, many=True)
+    if 'pod_line' in cache:
+        # get results from cache
+        pod_line_list = cache.get('pod_header_line')
+        return Response(pod_line_list, status=status.HTTP_201_CREATED)
+
+    else:
+        try:
+            pod_line_list = PurchaseOrderLine.objects.filter(
+                purchase_order_header_id=pk).order_by('-price')
+        except pod_line_list.DoesNotExist:
+            return Response(status=404)
+
+        results = PurchaseOrderLineSerializer(pod_line_list, many=True)
+        pod_line = None
+        cache.set(pod_line, results.data, timeout=CACHE_TTL)
         return Response(results.data)

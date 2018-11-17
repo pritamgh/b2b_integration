@@ -1,9 +1,6 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-
 from django.core.validators import RegexValidator
-
-from apps.purchase_orders.models import PurchaseOrderHeader, PurchaseOrderLine
 
 
 phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$',

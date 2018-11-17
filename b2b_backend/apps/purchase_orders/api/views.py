@@ -6,7 +6,7 @@ from .serializers import (
     PurchaseOrderHeaderSerializer,
     PurchaseOrderLineSerializer
 )
-
+from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework.status import (
     HTTP_201_CREATED,
@@ -18,8 +18,8 @@ from rest_framework.generics import (
     RetrieveUpdateAPIView,
     RetrieveDestroyAPIView,
 )
-from django_filters import rest_framework as filters
 
+from django_filters import rest_framework as filters
 
 
 # Filtering Option
@@ -33,15 +33,26 @@ class PurchaseOrderHeaderFilter(filters.FilterSet):
 class PurchaseOrderHeaderList(ListAPIView):
 
     queryset = PurchaseOrderHeader.objects.all()
+
+    permission_classes = [permissions.AllowAny, ]
     serializer_class = PurchaseOrderHeaderSerializer
+
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = PurchaseOrderHeaderFilter
 
 
 class PurchaseOrderHeaderCreate(ListCreateAPIView):
 
-    queryset = PurchaseOrderHeader.objects.all()
+    # queryset = PurchaseOrderHeader.objects.all()
+
+    permission_classes = [permissions.IsAuthenticated, ]
     serializer_class = PurchaseOrderHeaderSerializer
+
+    def get_queryset(self):
+        return self.request.user.PurchaseOrderHeader.objects.all()
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
 
 class PurchaseOrderHeaderUpdate(RetrieveUpdateAPIView):
@@ -64,10 +75,12 @@ class PurchaseOrderLineCreate(ListCreateAPIView):
     serializer_class = PurchaseOrderLineSerializer
 
     def get(self, request, fk, format=None):
-        """ when craete a new line send the header id under which we want to create the line """
+        """ when craete a new line send the header id under which
+        we want to create the line """
         try:
             """ retrieve the lines under this header id """
-            lines = PurchaseOrderLine.objects.filter(purchase_order_header_id=fk)
+            lines = PurchaseOrderLine.objects.filter(
+                purchase_order_header_id=fk)
             if request.method == 'GET':
                 serialized_lines = PurchaseOrderLineSerializer(
                     lines, many=True)

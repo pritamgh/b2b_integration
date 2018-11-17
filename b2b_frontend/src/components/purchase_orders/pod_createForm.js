@@ -49,7 +49,7 @@ class Form extends Component {
 
         const endpoint = 'http://127.0.0.1:8000/api/purchase-orders/create/';
         const csrfToken = cookie.load('csrftoken');
-        
+
         let form_data = {
             "order_number": this.state.order_number,
             // "order_type": "",

@@ -1,0 +1,5 @@
+F()
+Q()
+select_related()
+aggregate()
+annotate(no_of_order=Count('PurchaseOrderHeader'))

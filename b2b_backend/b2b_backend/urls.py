@@ -1,12 +1,12 @@
 from django.conf.urls import url, include
 from django.contrib import admin
-from django.views.generic.base import RedirectView
 
 
 urlpatterns = [
-    # url(r'^$', RedirectView.as_view(url='/admin/'),
-    # name='redirect-to-admin'),
+
     url(r'^admin/', admin.site.urls),
+
+    url(r'^index/', include('apps.accounts.urls')),
 
 
     # Cache Based View
@@ -17,12 +17,9 @@ urlpatterns = [
     url(r'^api/purchase-orders/',
         include('apps.purchase_orders.api.urls')),
 
-    # url(r'^api/auth/', include(
-    #    'rest_framework.urls', namespace='rest_framework')),
-    url(r'^api/auth/',
+    url(r'^api/users/',
         include('apps.users.api.urls')),
 
-    url(r'^api/users/',
-        include('apps.users.urls')),
+    url(r'^api/auth/', include('knox.urls')),
 
 ]

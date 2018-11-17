@@ -22,5 +22,5 @@ class PurchaseOrderHeaderSerializer(serializers.ModelSerializer):
         #           'customer', 'supplier', 'buyer_name', 'price', 'quantity',
         #           'order_date', 'currency', 'freight_term', 'ship_to_site',
         #           'ship_from_site', 'purchaseOrderLines')
-        fields = ('header_id', 'order_number', 'buyer_name',
+        fields = ('header_id', 'order_number', 'buyer_name', 'ship_to_site',
                   'ship_from_site', 'purchaseOrderLines')

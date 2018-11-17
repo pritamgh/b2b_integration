@@ -4,6 +4,9 @@ from . import views
 from rest_framework import routers
 from rest_framework.urlpatterns import format_suffix_patterns
 
+router = routers.SimpleRouter()
+# router.register('create', PurchaseOrderHeaderViewSet, 'create')
+
 urlpatterns = [
 
     # Purchase Order Header
@@ -14,10 +17,6 @@ urlpatterns = [
     url(r'^create/$', views.PurchaseOrderHeaderCreate.as_view(),
         name='create purchase order header'),
 
-    # url(r'^create/$', views.create_pod,
-    #     name='create purchase order header'),
-
-
     url(r'^update/header_id=(?P<pk>[0-9]+)/$',
         views.PurchaseOrderHeaderUpdate.as_view(),
         name='update purchase order header'),
@@ -26,10 +25,13 @@ urlpatterns = [
         views.PurchaseOrderHeaderDelete.as_view(),
         name='delete purchase order header'),
 
+
     # Purchase Order Line
 
-    # add line under a perticular header where header_id is the foreign key in line table
-    url(r'^header_id=(?P<fk>[0-9]+)/add-line/$', views.PurchaseOrderLineCreate.as_view(),
+    # add line under a perticular header where header_id
+    # is the foreign key in line table
+    url(r'^header_id=(?P<fk>[0-9]+)/add-line/$',
+        views.PurchaseOrderLineCreate.as_view(),
         name='create purchase order line'),
 
     url(r'^update/line_id=(?P<pk>[0-9]+)/$',
@@ -45,7 +47,6 @@ urlpatterns = [
     url(r'^search/q=(?P<pk>[0-9]+)/$',
         views.SearchApiView.as_view(),
         name='search'),
-
 
 ]
 

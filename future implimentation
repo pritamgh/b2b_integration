@@ -1,19 +1,44 @@
 Till Now:
-	Request/Response Done [GET/POST]
-	List all the Purchase Orders
-	Purchase Orders Create Form
+	Request/Response Done [GET/POST] for PODheader, PODline
+	PODhedaer Create Form
+	Cache basedviews
+	JWT based Authentication (login, registration), social auth
 
+have to do:	
+	Permission
 
-Product Enhancement:
+		1) Anyone can view the PODlist page [should be authenticated]
+		2) Any autheticated user can create PODheader/PODline
+		3) Only the owner of the PODheader/PODline can update it
+		4) Only Admin can delete PODheader/PODline or any such records
+
 	Search Functionality [React Form, Django Backend]
-	Caching
+
+
+Stack :
+	backend = 
+			python 3.5
+			django 1.11
+			django-restframework 3.8.2
 	
+	frontend = 
+			reactjs 16.4.1 [nodejs]
+	
+	databse = 
+			postgreSql 9.6
+	
+	cache =
+			redis 3.0.6
+			django-redis 4.9.0
+	
+	async-message-broker = 
+			celery 4.2.1
+			rabbitmq 3.5.7
+	
+	devops = 
+			docker
+			aws
 
-
-Technology :
-	use redis - Done
-	use celery & rabbitMQ - Done
-	use fabric
-	use swagger
-	use docker
-	deploy in aws
+	automation = 
+	 		fabric
+			swagger

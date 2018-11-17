@@ -1,22 +1,36 @@
-from ..models import CustomUser
-# from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth import authenticate
 from rest_framework import serializers
-# from rest_framework.authtoken.models import Token
+
+from ..models import CustomUser
 
 
-class RegistrationSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, required=True)
-
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ('email', 'first_name', 'last_name', 'password',
-                  'user_role', 'warehouse_exchange_id')
+        fields = ('id', 'email')
 
 
-class LoginSerializer(serializers.ModelSerializer):
-
+class CreateUserSerializer(serializers.ModelSerializer):
+    # For New User Registration
     class Meta:
         model = CustomUser
-        fields = ('email', 'password')
+        fields = ('id', 'email', 'password')
         extra_kwargs = {'password': {'write_only': True}}
 
+    def create(self, validated_data):
+        user = CustomUser.objects.create_user(validated_data['email'],
+                                              None,
+                                              validated_data['password'])
+        return user
+
+
+class LoginUserSerializer(serializers.Serializer):
+    email = serializers.CharField()
+    password = serializers.CharField()
+
+    def validate(self, data):
+        user = authenticate(**data)
+        if user and user.is_active:
+            return user
+        raise serializers.ValidationError(
+            "Unable to log in with provided credentials.")

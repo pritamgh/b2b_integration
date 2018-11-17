@@ -1,35 +1,58 @@
-from rest_framework import status
-from rest_framework.permissions import AllowAny
+from rest_framework import (
+    status,
+    permissions,
+    generics
+)
 from rest_framework.response import Response
-from rest_framework.views import APIView
 
-from .serializers import RegistrationSerializer, LoginSerializer
+from knox.auth import TokenAuthentication
+from knox.models import AuthToken
 
-
-class AuthRegister(APIView):
-    """
-    Register a new user.
-    """
-    serializer_class = RegistrationSerializer
-    permission_classes = (AllowAny,)
-
-    def post(self, request, format=None):
-        serializer = self.serializer_class(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+from .serializers import (
+    CreateUserSerializer,
+    UserSerializer,
+    LoginUserSerializer
+)
 
 
-class AuthLogin(APIView):
+class UserAPI(generics.RetrieveAPIView):
+    permission_classes = [permissions.IsAuthenticated, ]
+    serializer_class = UserSerializer
 
-    serializer_class = LoginSerializer
-    permission_classes = (AllowAny,)
+    def get_object(self):
+        return self.request.user
+
+
+class RegistrationAPI(generics.GenericAPIView):
+    serializer_class = CreateUserSerializer
 
     def post(self, request, *args, **kwargs):
-        data = request.data
-        serializer = LoginSerializer(data=data)
-        if serializer.is_valid(raise_exception=True):
-            new_data = serializer.data
-            return Response(new_data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        return Response({
+            "user": UserSerializer(user, context=self.get_serializer_context()).data,
+            "token": AuthToken.objects.create(user)
+        })
+
+
+class LoginAPI(generics.GenericAPIView):
+    serializer_class = LoginUserSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data
+        return Response({
+            "user": UserSerializer(user, context=self.get_serializer_context()).data,
+            "token": AuthToken.objects.create(user)
+        })
+
+
+class LogoutAPI(generics.GenericAPIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request, format=None):
+        request._auth.delete()
+        return Response(None, status=status.HTTP_204_NO_CONTENT)

@@ -12,7 +12,7 @@ DEBUG = True
 
 
 CORS_ALLOW_CREDENTIALS = True
-
+CORS_ORIGIN_ALLOW_ALL = True
 CORS_ORIGIN_WHITELIST = (
     'localhost:3000/'
 )
@@ -28,17 +28,19 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.postgres',
-    'django_object_actions',
+
+    'social_django',
     'django_filters',
     'imagekit',
     'corsheaders',
     'rest_framework',
-    'rest_framework.authtoken',
+    'knox',
 )
 LOCAL_APPS = (
     'apps.purchase_orders',
     'apps.sales_orders',
-    'apps.users'
+    'apps.users',
+    'apps.accounts'
 )
 
 INSTALLED_APPS += LOCAL_APPS
@@ -47,6 +49,9 @@ INSTALLED_APPS += LOCAL_APPS
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.AllowAny',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'knox.auth.TokenAuthentication',
     ),
     'DEFAULT_FILTER_BACKENDS': (
         'django_filters.rest_framework.DjangoFilterBackend',
@@ -69,7 +74,7 @@ ROOT_URLCONF = 'b2b_backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, "templates"), ],
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -77,6 +82,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -112,6 +119,19 @@ CACHES = {
 
 # Custom model for Auth
 AUTH_USER_MODEL = 'users.CustomUser'
+
+
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.open_id.OpenIdAuth',  # for Google authentication
+    'social_core.backends.google.GoogleOpenId',  # for Google authentication
+    'social_core.backends.google.GoogleOAuth2',  # for Google authentication
+    'social_core.backends.facebook.FacebookOAuth2',  # for Facebook authentication
+
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY ='969160142404-hq0rksn27qduiaobs44n0hptcvsmmhmu.apps.googleusercontent.com'  #Paste CLient Key
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'cbT5Vgwf1-k26buQkouLnhWf' #Paste Secret Key
 
 
 # Password validation
@@ -155,3 +175,7 @@ STATIC_URL = '/static/'
 # celery settings
 
 CELERY_BROKER_URL = 'amqp://localhost'
+
+
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'index'

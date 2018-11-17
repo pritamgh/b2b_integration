@@ -1,17 +1,19 @@
 from django.conf.urls import url, include
-from .views import AuthRegister, AuthLogin
+from rest_framework import routers
 
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
+from .views import (
+    UserAPI,
+    RegistrationAPI,
+    LoginAPI,
+    LogoutAPI
 )
 
+router = routers.DefaultRouter()
 
 urlpatterns = [
-    
-    # url(r'^login/$', AuthLogin.as_view()),
-    # url(r'^register/$', AuthRegister.as_view()),
-
-    url(r'^api/auth/token/obtain/$', TokenObtainPairView.as_view()),
-    url(r'^api/auth/token/refresh/$', TokenRefreshView.as_view()),
+    url(r'^', include(router.urls)),
+    url(r'^auth/user/$', UserAPI.as_view()),
+    url(r'^auth/register/$', RegistrationAPI.as_view()),
+    url(r'^auth/login/$', LoginAPI.as_view()),
+    url(r'^auth/logout/$', LogoutAPI.as_view()),
 ]

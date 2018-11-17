@@ -1,7 +1,8 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-
 from django.core.validators import RegexValidator
+
+from apps.users.models import CustomUser
 
 
 phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$',
@@ -11,6 +12,34 @@ phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$',
 class PurchaseOrderHeader(models.Model):
 
     header_id = models.AutoField(primary_key=True)
+    # buyer_email = models.EmailField(
+    #     verbose_name=_('email address'),
+    #     unique=True,
+    #     null=True,
+    #     blank=True,
+    #     error_messages={
+    #         'unique': _("A Buyer with this email already exists."),
+    #     },
+    #     help_text={"Buyer Is The Owner of Purchase Order"}
+    # )
+    owner = models.ForeignKey(
+        CustomUser,
+        on_delete=models.CASCADE, null=True,
+        help_text={"Buyer Is The Owner of Purchase Order"}
+    )
+    buyer_name = models.CharField(
+        max_length=240,
+        verbose_name=_('Buyer Name'),
+        null=True,
+        blank=False,
+    )
+    buyer_contact = models.CharField(
+        validators=[phone_regex],
+        max_length=17,
+        null=True,
+        blank=True,
+        verbose_name=_('Buyer Email')
+    )
     edi_id = models.CharField(
         max_length=60,
         verbose_name=_('EDI ID'),
@@ -107,28 +136,6 @@ class PurchaseOrderHeader(models.Model):
         verbose_name=_('Supplier Notes For Header'),
         null=True,
         blank=True,
-    )
-    buyer_name = models.CharField(
-        max_length=240,
-        verbose_name=_('Buyer Name'),
-        null=True,
-        blank=False,
-    )
-    buyer_email = models.EmailField(
-        verbose_name=_('email address'),
-        unique=True,
-        null=True,
-        blank=True,
-        error_messages={
-            'unique': _("A Buyer with this email already exists."),
-        },
-    )
-    buyer_contact = models.CharField(
-        validators=[phone_regex],
-        max_length=17,
-        null=True,
-        blank=True,
-        verbose_name=_('Buyer Email')
     )
     item = models.CharField(
         max_length=240,

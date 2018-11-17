@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
+import { connect } from "react-redux";
 import axios from 'axios';
 
 import { Fa, Button, Table, TableBody, TableHead } from 'mdbreact';
-import PurchaseOrderLine from './podline_list';
+
+import {auth} from "../../actions/accounts";
 
 
 class PurchaseOrders extends Component {
@@ -15,6 +17,9 @@ class PurchaseOrders extends Component {
       podlist : [],
       podlinelist: [],
     };
+
+    this.purchaseOrdersList = this.purchaseOrdersList.bind(this);
+    this.purchaseOrderLineList = this.purchaseOrderLineList.bind(this);
 
   };
 
@@ -58,21 +63,21 @@ class PurchaseOrders extends Component {
 
   componentDidMount() {
     this.purchaseOrdersList();
-    // this.purchaseOrderLineList();
   };
 
   render() {
-
-    const { podlist } = this.state.podlist;
-    const { podlinelist } = this.state.podlinelist;
-
     return (
       <div>
-        <Table responsive hover bordered>
+        <h4>Purchase Order Header List</h4>
+        <div style={{textAlign: "right"}}>
+          {this.props.user.email} (<a onClick={this.props.logout}>logout</a>)
+        </div>
+        <Table small bordered>
           <TableHead>
             <tr className="row">
               <th className="col-2"> Order Number </th>
               <th className="col-2"> Buyer Name </th>
+              <th className="col-2"> Ship To Site </th>
               <th className="col-2"> Ship From Site </th>
               <th className="col-4"> Action </th>
             </tr>
@@ -82,6 +87,7 @@ class PurchaseOrders extends Component {
               <tr className="row" key={item.header_id}>  
                 <td className="col-2"> {item.order_number} </td>
                 <td className="col-2"> {item.buyer_name} </td>
+                <td className="col-2"> {item.ship_to_site} </td>
                 <td className="col-2"> {item.ship_from_site} </td>
                 <td className="col-4">
                   <Button onClick={this.purchaseOrderLineList} value={item.header_id} size="sm" color="info" rounded outline>
@@ -95,34 +101,36 @@ class PurchaseOrders extends Component {
                   </Button>
                 </td>
               </tr>
-            ))};
+            ))}
           </TableBody>
         </Table>
+        
+        <h6>Purchase Order Line List</h6>
 
         {
-          podlinelist !== undefined ? (
-            <Table responsive hover bordered>
+          this.state.podlinelist !== undefined ? (
+            <Table small>
               <TableHead>
-                <tr className="row">
-                  <th className="col-2"> Line ID </th>
-                  <th className="col-2"> Item </th>
-                  <th className="col-2"> Unit of Measure </th>
-                  <th className="col-2"> Price </th>
-                  <th className="col-2"> Quantity </th>
-                  <th className="col-4"> Action </th>
+                <tr>
+                  <th> Line ID </th>
+                  <th> Item </th>
+                  <th> Unit of Measure </th>
+                  <th> Price </th>
+                  <th> Quantity </th>
+                  <th> Action </th>
                 </tr>
               </TableHead>
-              <TableBody>
-                {podlinelist.map(item => (
-                  <tr className="row" key={item.line_id}>  
-                    <td className="col-2"> {item.line_id} </td>
-                    <td className="col-2"> {item.item} </td>
-                    <td className="col-2"> {item.uom} </td>
-                    <td className="col-2"> {item.price} </td>
-                    <td className="col-2"> {item.quantity} </td>
-                    <td className="col-4">
-                      <Button value={item.line_id} size="sm" color="info" rounded outline>
-                        Info<Fa icon="info" className="ml-1"/>
+              <TableBody>               
+                {this.state.podlinelist.map(item => (
+                  <tr className="row-9" key={item.line_id}>  
+                    <td> {item.line_id} </td>
+                    <td> {item.item} </td>
+                    <td> {item.uom} </td>
+                    <td> {item.price} </td>
+                    <td> {item.quantity} </td>
+                    <td>
+                      <Button onClick={this.purchaseOrderLineList} value={item.header_id} size="sm" color="info" rounded outline>
+                        Details<Fa icon="info" className="ml-1"/>
                       </Button>
                       <Button value={item.line_id} size="sm" color="success" rounded outline>
                         Edit<Fa icon="edit" className="ml-1"/>
@@ -132,7 +140,7 @@ class PurchaseOrders extends Component {
                       </Button>
                     </td>
                   </tr>
-                ))};
+                ))}
               </TableBody>
             </Table>
           ) : (
@@ -142,7 +150,18 @@ class PurchaseOrders extends Component {
       </div>
     );
   }
-
 }
 
-export default PurchaseOrders;
+const mapStateToProps = state => {
+  return {
+    user: state.auth.user,
+  }
+}
+
+const mapDispatchToProps = dispatch => {
+  return {
+    logout: () => dispatch(auth.logout()),
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(PurchaseOrders);
